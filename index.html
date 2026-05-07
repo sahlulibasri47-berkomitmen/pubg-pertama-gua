@@ -1,1 +1,30 @@
-<h1>Website PUBG Bang Sahlul</h1><p>Buat latihan website desa</p>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Game Tembak Bang Sahlul</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { text-align: center; font-family: Arial; background: #1a1a1a; color: white; margin: 0; padding: 10px; }
+        h1 { color: #ffcc00; }
+        #gameArea { width: 300px; height: 400px; background: #0d4d0d; border: 3px solid #ffcc00; margin: 10px auto; position: relative; overflow: hidden; }
+        #target { width: 40px; height: 40px; background: red; border-radius: 50%; position: absolute; cursor: crosshair; border: 2px solid white; }
+        #skor { font-size: 24px; color: #00ff00; }
+        button { background: #ff3300; color: white; border: none; padding: 10px 20px; font-size: 18px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🔥 TEMBAK BOTOL BANG SAHLUL 🔥</h1>
+    <p>Skor: <span id="skor">0</span></p>
+    <p>Waktu: <span id="waktu">30</span> detik</p>
+    <div id="gameArea"><div id="target"></div></div>
+    <button onclick="mulaiGame()">MULAI TEMBAK!</button>
+    <p>Website by Bang Sahlul © 2026</p>
+    <script>
+        let skor=0,waktu=30,gameJalan=false,target=document.getElementById('target'),gameArea=document.getElementById('gameArea');
+        function acakPosisi(){let x=Math.random()*(gameArea.offsetWidth-40);let y=Math.random()*(gameArea.offsetHeight-40);target.style.left=x+'px';target.style.top=y+'px';}
+        function tembak(){if(gameJalan){skor++;document.getElementById('skor').innerText=skor;acakPosisi();}}
+        function mulaiGame(){skor=0;waktu=30;gameJalan=true;document.getElementById('skor').innerText=skor;document.getElementById('waktu').innerText=waktu;acakPosisi();let timer=setInterval(function(){waktu--;document.getElementById('waktu').innerText=waktu;if(waktu<=0){clearInterval(timer);gameJalan=false;alert('GAME OVER! Skor Bang Sahlul: '+skor);}},1000);}
+        target.onclick=tembak;acakPosisi();
+    </script>
+</body>
+</html>
