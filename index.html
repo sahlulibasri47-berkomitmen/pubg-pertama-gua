@@ -1,30 +1,130 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>Game Tembak Bang Sahlul</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tuyul Tetanggaku - Game Bang Sahlul</title>
     <style>
-        body { text-align: center; font-family: Arial; background: #1a1a1a; color: white; margin: 0; padding: 10px; }
-        h1 { color: #ffcc00; }
-        #gameArea { width: 300px; height: 400px; background: #0d4d0d; border: 3px solid #ffcc00; margin: 10px auto; position: relative; overflow: hidden; }
-        #target { width: 40px; height: 40px; background: red; border-radius: 50%; position: absolute; cursor: crosshair; border: 2px solid white; }
-        #skor { font-size: 24px; color: #00ff00; }
-        button { background: #ff3300; color: white; border: none; padding: 10px 20px; font-size: 18px; border-radius: 5px; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            user-select: none;
+        }
+        h1 { color: #e94560; text-shadow: 2px 2px 4px black; font-size: 24px; }
+        #gameArea {
+            width: 300px;
+            height: 400px;
+            background: #0f3460;
+            border: 3px solid #e94560;
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        #tuyul {
+            width: 50px;
+            height: 50px;
+            background: #16213e;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: absolute;
+            display: none;
+            transition: all 0.1s;
+            border: 2px solid white;
+        }
+        #tuyul::before {
+            content: '👻';
+            font-size: 35px;
+            position: absolute;
+            top: 2px;
+            left: 7px;
+        }
+        #info { font-size: 18px; margin: 10px; }
+        #startBtn {
+            padding: 15px 30px;
+            font-size: 18px;
+            background: #e94560;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <h1>🔥 TEMBAK BOTOL BANG SAHLUL 🔥</h1>
-    <p>Skor: <span id="skor">0</span></p>
-    <p>Waktu: <span id="waktu">30</span> detik</p>
-    <div id="gameArea"><div id="target"></div></div>
-    <button onclick="mulaiGame()">MULAI TEMBAK!</button>
-    <p>Website by Bang Sahlul © 2026</p>
+    <h1>👻 TUYUL TETANGGAKU 👻</h1>
+    <p style="margin-top:-10px; font-size:14px;">Jangan sampe lolos bang! Tangkap!</p>
+    <div id="info">Ketangkap: <span id="skor">0</span> | Lolos: <span id="nyawa">3</span> | Waktu: <span id="waktu">30</span>s</div>
+    <div id="gameArea">
+        <div id="tuyul"></div>
+    </div>
+    <button id="startBtn" onclick="mulaiGame()">TANGKAP TUYUL!</button>
+    <p style="margin-top:20px; font-size:12px;">Game by Bang Sahlul © 2026</p>
+
     <script>
-        let skor=0,waktu=30,gameJalan=false,target=document.getElementById('target'),gameArea=document.getElementById('gameArea');
-        function acakPosisi(){let x=Math.random()*(gameArea.offsetWidth-40);let y=Math.random()*(gameArea.offsetHeight-40);target.style.left=x+'px';target.style.top=y+'px';}
-        function tembak(){if(gameJalan){skor++;document.getElementById('skor').innerText=skor;acakPosisi();}}
-        function mulaiGame(){skor=0;waktu=30;gameJalan=true;document.getElementById('skor').innerText=skor;document.getElementById('waktu').innerText=waktu;acakPosisi();let timer=setInterval(function(){waktu--;document.getElementById('waktu').innerText=waktu;if(waktu<=0){clearInterval(timer);gameJalan=false;alert('GAME OVER! Skor Bang Sahlul: '+skor);}},1000);}
-        target.onclick=tembak;acakPosisi();
+        let skor = 0, nyawa = 3, waktu = 30, gameJalan = false;
+        let tuyul = document.getElementById('tuyul');
+        let gameArea = document.getElementById('gameArea');
+        let timerGame, timerTuyul;
+
+        function munculTuyul() {
+            if (!gameJalan) return;
+            let maxX = gameArea.clientWidth - 50;
+            let maxY = gameArea.clientHeight - 50;
+            tuyul.style.left = Math.random() * maxX + 'px';
+            tuyul.style.top = Math.random() * maxY + 'px';
+            tuyul.style.display = 'block';
+            
+            let kecepatan = 2000 - (skor * 50);
+            if (kecepatan < 600) kecepatan = 600;
+            
+            timerTuyul = setTimeout(() => {
+                if (tuyul.style.display === 'block') {
+                    tuyul.style.display = 'none';
+                    nyawa--;
+                    document.getElementById('nyawa').textContent = nyawa;
+                    if (nyawa <= 0) gameOver();
+                }
+                if(gameJalan) munculTuyul();
+            }, kecepatan);
+        }
+
+        tuyul.onclick = function() {
+            if (!gameJalan) return;
+            clearTimeout(timerTuyul);
+            tuyul.style.display = 'none';
+            skor++;
+            document.getElementById('skor').textContent = skor;
+            munculTuyul();
+        }
+
+        function mulaiGame() {
+            skor = 0; nyawa = 3; waktu = 30; gameJalan = true;
+            document.getElementById('skor').textContent = skor;
+            document.getElementById('nyawa').textContent = nyawa;
+            document.getElementById('waktu').textContent = waktu;
+            document.getElementById('startBtn').style.display = 'none';
+            munculTuyul();
+            
+            timerGame = setInterval(() => {
+                waktu--;
+                document.getElementById('waktu').textContent = waktu;
+                if (waktu <= 0) gameOver();
+            }, 1000);
+        }
+
+        function gameOver() {
+            gameJalan = false;
+            clearInterval(timerGame);
+            clearTimeout(timerTuyul);
+            tuyul.style.display = 'none';
+            document.getElementById('startBtn').style.display = 'block';
+            document.getElementById('startBtn').textContent = 'TANGKAP LAGI';
+            alert('BUSSEET! GAME OVER 👻\nTuyul Tetangga Ketangkap: ' + skor + '\n\nKalo lolos 3x = tetangga marah bang! 😂');
+        }
     </script>
 </body>
 </html>
